@@ -1,33 +1,19 @@
+
+
 Phase 1: Networking Fundamentals (Weeks 1–4)
 Goal: Build a solid foundation in networking, LAN/WAN, and network security basics.
+
+
 Week 1: Networking Basics
-
-
 Theory:
-
-
 OSI and TCP/IP Models
-
-
 IP addressing, subnets, CIDR
-
-
 MAC addresses, ARP
-
-
 Ethernet and VLAN basics
 
-
-
-
 Lab:
-
-
 Configure IP addressing on Cisco packet tracer / GNS3.
-
-
 Create VLANs and assign IPs.
-
 
 # Example: Cisco switch VLAN config
 Switch> enable
@@ -46,27 +32,13 @@ Switch# show vlan brief
 
 Week 2: Routing Basics
 
-
 Theory:
-
-
 Static vs dynamic routing (RIP, OSPF, BGP overview)
-
-
 Default gateways, NAT basics
-
-
 Routing tables
 
-
-
-
 Lab:
-
-
 Configure static routes and default gateways
-
-
 Router> enable
 Router# configure terminal
 Router(config)# interface g0/0
@@ -80,25 +52,11 @@ Router# show ip route
 
 
 Week 3: Switching & VLANs
-
-
 Theory:
-
-
 Layer 2 switching
-
-
 VLANs, trunking, spanning tree basics
-
-
-
-
 Lab:
-
-
 Configure trunk ports between switches
-
-
 Switch(config)# interface g0/1
 Switch(config-if)# switchport mode trunk
 Switch(config-if)# switchport trunk allowed vlan 10,20
@@ -109,25 +67,11 @@ Switch# show interfaces trunk
 
 
 Week 4: TCP/IP Services & Protocols
-
-
 Theory:
-
-
 DHCP, DNS, HTTP/HTTPS, FTP, SNMP
-
-
 ICMP, ping, traceroute
-
-
-
-
 Lab:
-
-
 Configure a DHCP server on a router
-
-
 Router(config)# ip dhcp pool LAN
 Router(dhcp-config)# network 192.168.1.0 255.255.255.0
 Router(dhcp-config)# default-router 192.168.1.1
@@ -135,39 +79,26 @@ Router(dhcp-config)# dns-server 8.8.8.8
 Router# show ip dhcp binding
 
 
-
+============================================================================================================================================================================================
 
 Phase 2: Firewall & Network Security Fundamentals (Weeks 5–8)
 Goal: Learn firewall basics, VPNs, and security monitoring.
+
 Week 5: Firewalls
-
-
 Theory:
-
-
 What is a firewall? Packet filtering vs Stateful
-
-
 Fortinet/Cisco/Palo Alto firewall basics
-
-
 Security zones and policies
 
-
-
-
 Lab:
-
-
 Configure a basic FortiGate firewall
-
-
 config system interface
     edit "port1"
         set ip 192.168.1.1/24
         set allowaccess ping https ssh
     next
 end
+
 config firewall policy
     edit 1
         set srcintf "port1"
@@ -179,31 +110,16 @@ config firewall policy
 end
 
 
-
-
 Week 6: VPNs
-
-
 Theory:
-
-
 Types: Site-to-Site, Remote Access VPN
-
-
 IPSec vs SSL VPN
-
-
 Authentication methods (PSK, certificates)
-
-
-
 
 Lab:
 
 
 Configure site-to-site VPN between two Cisco routers
-
-
 crypto isakmp policy 10
  encryption aes
  hash sha
@@ -222,28 +138,14 @@ interface g0/0
 
 
 Week 7: IDS/IPS & Threat Detection
-
-
 Theory:
-
-
 IDS vs IPS
-
-
 Signatures and anomaly detection
-
-
 Common attacks (DoS, MITM, brute force)
-
-
-
 
 Lab:
 
-
 Configure basic Snort IDS on Linux
-
-
 sudo apt install snort -y
 sudo snort -A console -c /etc/snort/snort.conf -i eth0
 
@@ -251,109 +153,59 @@ sudo snort -A console -c /etc/snort/snort.conf -i eth0
 
 
 Week 8: Security Monitoring Tools
-
-
 Theory:
-
-
 SolarWinds, Netcool, Nagios, PRTG basics
-
-
 Event logs, SNMP, Syslog
-
-
-
-
 Lab:
 
-
 Install Nagios Core and monitor a host
-
-
 sudo apt install nagios4 nagios-plugins -y
 sudo systemctl start nagios4
 sudo systemctl enable nagios4
 # Access web UI at http://<server-ip>/nagios4
 
+============================================================================================================================================================================================
 
 
 
 Phase 3: Cloud Security Fundamentals (Weeks 9–12)
 Goal: Understand AWS basics, VPCs, IAM, and hybrid cloud security.
+
 Week 9: AWS Networking Basics
-
-
 Theory:
-
-
 VPC, Subnets, Internet Gateway, NAT Gateway
-
-
 Security Groups vs NACLs
-
-
-
-
 Lab:
 
 
 Create a VPC with 2 subnets
-
-
 # AWS CLI example
 aws ec2 create-vpc --cidr-block 10.0.0.0/16
 aws ec2 create-subnet --vpc-id <vpc-id> --cidr-block 10.0.1.0/24
 aws ec2 create-subnet --vpc-id <vpc-id> --cidr-block 10.0.2.0/24
 
 
-
-
 Week 10: IAM & Security Policies
-
-
 Theory:
-
-
 IAM users, groups, roles, and policies
-
-
 Principle of Least Privilege
 
 
-
-
 Lab:
-
-
 Create an IAM user with S3 read-only access
-
-
 aws iam create-user --user-name AuditUser
 aws iam attach-user-policy --user-name AuditUser --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
 
-
-
-
 Week 11: Cloud Firewall & VPN
-
-
 Theory:
-
-
 Security Groups vs NACLs
-
-
 Site-to-Site VPN to AWS
 
 
 
 
 Lab:
-
-
 Configure security group for web server access
-
-
 aws ec2 create-security-group --group-name WebSG --description "Web Server SG" --vpc-id <vpc-id>
 aws ec2 authorize-security-group-ingress --group-id <sg-id> --protocol tcp --port 80 --cidr 0.0.0.0/0
 
@@ -361,30 +213,19 @@ aws ec2 authorize-security-group-ingress --group-id <sg-id> --protocol tcp --por
 
 
 Week 12: Cloud Monitoring & Logging
-
-
 Theory:
-
-
 CloudWatch, CloudTrail
-
-
 Logging, alerts, and incident response
 
 
 
 
 Lab:
-
-
 Enable CloudTrail and view events
-
-
 aws cloudtrail create-trail --name MyTrail --s3-bucket-name my-cloudtrail-logs
 aws cloudtrail start-logging --name MyTrail
 
-
-
+=============================================================================================================================================================================================
 
 ✅ Next Phase: Advanced Cloud Security & Hybrid Networking with Fortinet SD-WAN, Palo Alto, AWS Security Best Practices, Terraform automation, and Security Audits.
 
