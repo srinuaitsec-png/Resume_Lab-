@@ -16,16 +16,73 @@ Configure IP addressing on Cisco packet tracer / GNS3.
 Create VLANs and assign IPs.
 
 # Example: Cisco switch VLAN config
+
+
+
 Switch> enable
+configure terminal
+vlan 10
+name HR 
+exit
+interface gigabitEthernet 0/0
+switchport mode access
+switchport access vlan 10
+exit
+
+show vlan brief
+
+
+enable
+configure terminal
+interface gigabitEthernet 0/1
+switchport mode access
+switchport access vlan 10
+exit
+show vlan brief
+
+
+enable
 Switch# configure terminal
-Switch(config)# vlan 10
-Switch(config-vlan)# name Sales
-Switch(config-vlan)# exit
-Switch(config)# interface fastEthernet 0/1
-Switch(config-if)# switchport mode access
-Switch(config-if)# switchport access vlan 10
-Switch(config-if)# exit
-Switch# show vlan brief
+vlan 20
+name IT  
+exit
+
+
+interface gigabitEthernet 0/2
+switchport mode access
+switchport access vlan 20
+
+interface gigabitEthernet 0/3
+switchport mode access
+switchport access vlan 20
+exit
+
+
+show vlan brief
+
+
+
+Router> enable
+configure terminal
+
+interface gig0/0
+no shutdown
+
+interface gig0/0.10
+encapsulation dot1Q 10
+ip address 10.10.10.1 255.255.255.0
+exit
+
+interface gig0/0.20
+encapsulation dot1Q 20
+ip address 10.10.20.1 255.255.255.0
+exit
+
+interface gig0/0.30
+encapsulation dot1Q 30
+ip address 192.168.30.1 255.255.255.0
+exit
+
 
 
 
