@@ -167,6 +167,76 @@ config firewall policy
 end
 
 
+
+Below is a simple, working example of eBGP configuration between two Juniper (vMX/vSRX) routers in EVE-NG using Junos OS.
+
+Topology
+R1 (AS 65001) -------- R2 (AS 65002)
+        ge-0/0/0      ge-0/0/0
+     10.0.12.1/30   10.0.12.2/30
+
+Router 1 (R1) Configuration
+AS: 65001
+Interface IP: 10.0.12.1/30
+Advertised network: 1.1.1.0/24
+
+
+configure
+set system host-name R1
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.12.1/30
+set interfaces lo0 unit 0 family inet address 1.1.1.1/32
+set routing-options autonomous-system 65001
+set protocols bgp group EBGP-R2 type external
+set protocols bgp group EBGP-R2 peer-as 65002
+set protocols bgp group EBGP-R2 neighbor 10.0.12.2
+
+set policy-options policy-statement EXPORT-LOOPBACK term 1 from route-filter 1.1.1.0/24 exact
+set policy-options policy-statement EXPORT-LOOPBACK term 1 then accept
+set policy-options policy-statement EXPORT-LOOPBACK then reject
+set protocols bgp group EBGP-R2 export EXPORT-LOOPBACK
+commit
+
+Router 2 (R2) Configuration
+AS: 65002
+Interface IP: 10.0.12.2/30
+Advertised network: 2.2.2.0/24
+
+configure
+set system host-name R2
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.12.2/30
+set interfaces lo0 unit 0 family inet address 2.2.2.2/32
+set routing-options autonomous-system 65002
+set protocols bgp group EBGP-R1 type external
+set protocols bgp group EBGP-R1 peer-as 65001
+set protocols bgp group EBGP-R1 neighbor 10.0.12.1
+
+set policy-options policy-statement EXPORT-LOOPBACK term 1 from route-filter 2.2.2.0/24 exact
+set policy-options policy-statement EXPORT-LOOPBACK term 1 then accept
+set policy-options policy-statement EXPORT-LOOPBACK then reject
+set protocols bgp group EBGP-R1 export EXPORT-LOOPBACK
+commit
+
+Verification Commands (on both routers)
+show bgp neighbor
+show bgp summary
+show route protocol bgp
+ping 2.2.2.2 source 1.1.1.1
+
+Expected Result
+BGP state: Established
+R1 learns 2.2.2.0/24 via BGP
+R2 learns 1.1.1.0/24 via BGP
+Successful ping between loopbacks
+If you want:
+iBGP configuration
+BGP with loopback peering
+BGP authentication
+Route-reflector or multihop setup
+Tell me and I’ll tailor it for your lab 👍
+
+
+
+
 Week 6: VPNs
 Theory:
 Types: Site-to-Site, Remote Access VPN
