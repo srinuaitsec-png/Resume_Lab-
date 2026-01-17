@@ -167,76 +167,147 @@ config firewall policy
 end
 
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Scenario
 
-Below is a simple, working example of eBGP configuration between two Juniper (vMX/vSRX) routers in EVE-NG using Junos OS.
+Two SRX devices: SRX1 and SRX2
 
-Topology
-R1 (AS 65001) -------- R2 (AS 65002)
-        ge-0/0/0      ge-0/0/0
-     10.0.12.1/30   10.0.12.2/30
+Each SRX has:
 
-Router 1 (R1) Configuration
-AS: 65001
-Interface IP: 10.0.12.1/30
-Advertised network: 1.1.1.0/24
+ge-0/0/0 interface connected to a common subnet (e.g., 10.0.0.0/30)
 
+Each SRX will advertise loopback networks via BGP.
 
-configure
-set system host-name R1
-set interfaces ge-0/0/0 unit 0 family inet address 10.0.12.1/30
+Device	Interface	IP Address	Loopback
+SRX1	ge-0/0/0	10.0.0.1/30	1.1.1.1/32
+SRX2	ge-0/0/0	10.0.0.2/30	2.2.2.2/32
+
+AS numbers:
+
+SRX1: 65001
+
+SRX2: 65002
+
+Step 1: Configure basic interfaces
+
+On SRX1:
+
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.0.1/30
+
+On SRX2:
+
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.0.2/30
+
+Explanation:
+
+unit 0 is the default logical interface.
+
+family inet is for IPv4 addresses.
+
+Step 2: Configure loopbacks
+
+On SRX1:
+
 set interfaces lo0 unit 0 family inet address 1.1.1.1/32
-set routing-options autonomous-system 65001
-set protocols bgp group EBGP-R2 type external
-set protocols bgp group EBGP-R2 peer-as 65002
-set protocols bgp group EBGP-R2 neighbor 10.0.12.2
 
-set policy-options policy-statement EXPORT-LOOPBACK term 1 from route-filter 1.1.1.0/24 exact
-set policy-options policy-statement EXPORT-LOOPBACK term 1 then accept
-set policy-options policy-statement EXPORT-LOOPBACK then reject
-set protocols bgp group EBGP-R2 export EXPORT-LOOPBACK
-commit
+On SRX2:
 
-Router 2 (R2) Configuration
-AS: 65002
-Interface IP: 10.0.12.2/30
-Advertised network: 2.2.2.0/24
-
-configure
-set system host-name R2
-set interfaces ge-0/0/0 unit 0 family inet address 10.0.12.2/30
 set interfaces lo0 unit 0 family inet address 2.2.2.2/32
-set routing-options autonomous-system 65002
-set protocols bgp group EBGP-R1 type external
-set protocols bgp group EBGP-R1 peer-as 65001
-set protocols bgp group EBGP-R1 neighbor 10.0.12.1
 
-set policy-options policy-statement EXPORT-LOOPBACK term 1 from route-filter 2.2.2.0/24 exact
-set policy-options policy-statement EXPORT-LOOPBACK term 1 then accept
-set policy-options policy-statement EXPORT-LOOPBACK then reject
-set protocols bgp group EBGP-R1 export EXPORT-LOOPBACK
+Explanation:
+Loopbacks are used as stable BGP router IDs and for advertising reachable networks.
+
+Step 3: Configure BGP
+SRX1 (AS 65001)
+set routing-options router-id 1.1.1.1
+set protocols bgp group SRX2 type external
+set protocols bgp group SRX2 peer-as 65002
+set protocols bgp group SRX2 neighbor 10.0.0.2
+set protocols bgp group SRX2 export EXPORT-LO
+
+
+SRX2 (AS 65002)
+
+set routing-options router-id 2.2.2.2
+set protocols bgp group SRX1 type external
+set protocols bgp group SRX1 peer-as 65001
+set protocols bgp group SRX1 neighbor 10.0.0.1
+set protocols bgp group SRX1 export EXPORT-LO
+
+
+Explanation:
+
+router-id: identifies the BGP router uniquely (commonly loopback IP).
+
+group: logical grouping of BGP neighbors.
+
+type external: indicates eBGP.
+
+peer-as: remote AS number.
+
+neighbor: the IP address of the BGP peer.
+
+export: optional policy to advertise networks.
+
+Step 4: Create a policy to advertise loopbacks
+
+On both SRXs:
+
+set policy-options policy-statement EXPORT-LO term 1 from interface lo0.0
+set policy-options policy-statement EXPORT-LO term 1 then accept
+
+
+Explanation:
+
+BGP does not advertise any network by default.
+
+Policy statement EXPORT-LO tells BGP to advertise the loopback interface (lo0).
+
+Step 5: Commit the configuration
 commit
 
-Verification Commands (on both routers)
-show bgp neighbor
+Step 6: Verify BGP
+
+On either SRX:
+
 show bgp summary
 show route protocol bgp
-ping 2.2.2.2 source 1.1.1.1
-
-Expected Result
-BGP state: Established
-R1 learns 2.2.2.0/24 via BGP
-R2 learns 1.1.1.0/24 via BGP
-Successful ping between loopbacks
-If you want:
-iBGP configuration
-BGP with loopback peering
-BGP authentication
-Route-reflector or multihop setup
-Tell me and I’ll tailor it for your lab 👍
 
 
+Expected output:
+
+BGP session should be Established.
+
+Loopback network of the peer should appear in the routing table.
+
+Step 7: Optional: Test connectivity
+
+From SRX1:
+
+ping 2.2.2.2
 
 
+From SRX2:
+
+ping 1.1.1.1
+
+
+If everything is configured correctly, the pings should succeed.
+
+✅ Key Notes for EVE-NG:
+
+Ensure SRX VM interfaces are connected to the same virtual network.
+
+Use Ctrl+Shift+6 in the console if pinging from EVE-NG doesn’t show traffic.
+
+Juniper SRX runs JUNOS, so commit is required after configuration changes.
+
+By default, BGP will not advertise anything unless a policy is applied.
+
+If you want, I can draw a ready-to-use EVE-NG topology diagram with all SRX nodes, links, IPs, and BGP settings, so you can just drag and drop it and configure. This makes labs much faster.
+
+Do you want me to do that?
+____________________________________________________________________________________________________________________________________________________________________________________________
 Week 6: VPNs
 Theory:
 Types: Site-to-Site, Remote Access VPN
