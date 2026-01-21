@@ -1,0 +1,190 @@
+Here’s a clear, beginner-friendly overview of Juniper Networking Fundamentals, commonly expected for interviews, certifications (like JNCIA-Junos), or basic network operations.
+
+1. What is Juniper Networks?
+
+Juniper Networks is a company that designs and sells networking equipment such as:
+
+Routers
+
+Switches
+
+Firewalls
+
+Security & automation solutions
+
+Juniper is especially known for:
+
+Service provider networks
+
+Data centers
+
+Enterprise networks
+
+2. Junos OS (Core Foundation)
+
+All Juniper devices run Junos OS, which is:
+
+Single OS across all devices
+
+Modular (separate control and forwarding planes)
+
+Highly stable and secure
+
+Key Junos Concepts
+
+Control Plane – Routing protocols, system management
+
+Data (Forwarding) Plane – Packet forwarding
+
+Management Plane – CLI, SSH, NETCONF
+
+3. Juniper Device Types
+Routers
+
+MX Series (Service Provider)
+
+PTX Series (Core routing)
+
+SRX (Routing + Security)
+
+Switches
+
+EX Series (Enterprise switching)
+
+QFX Series (Data Center)
+
+Firewalls
+
+SRX Series (Next-Gen Firewall)
+
+4. Junos CLI Basics
+
+Juniper CLI has two main modes:
+
+1. Operational Mode
+
+Used for monitoring and troubleshooting:
+
+show interfaces
+show route
+show version
+
+2. Configuration Mode
+
+Used to configure devices:
+
+configure
+set interfaces ge-0/0/0 unit 0 family inet address 192.168.1.1/24
+commit
+
+5. Configuration Hierarchy
+
+Junos uses a hierarchical configuration structure, similar to a tree:
+
+interfaces
+ └── ge-0/0/0
+     └── unit 0
+         └── family inet
+             └── address
+
+
+This makes configurations:
+
+Easy to read
+
+Easy to roll back
+
+Consistent
+
+6. Interfaces & Naming
+
+Interface format:
+
+ge-0/0/0
+│  │ │
+│  │ └─ Port
+│  └── PIC
+└───── FPC
+
+
+Types:
+
+ge – Gigabit Ethernet
+
+xe – 10 Gigabit
+
+et – 100 Gigabit
+
+7. Routing Fundamentals
+
+Supported routing protocols:
+
+Static Routing
+
+OSPF
+
+IS-IS
+
+BGP
+
+RIP
+
+Example (Static Route):
+
+set routing-options static route 0.0.0.0/0 next-hop 192.168.1.254
+
+8. Security Basics (SRX)
+
+Key concepts:
+
+Zones (trust, untrust)
+
+Policies
+
+NAT
+
+Stateful firewall
+
+Traffic flows are controlled by security policies, not interfaces alone.
+
+9. Configuration Management
+
+Juniper provides powerful config control:
+
+commit – Apply changes
+
+commit confirmed – Auto rollback
+
+rollback – Restore previous configs
+
+compare – View changes before commit
+
+10. Common Certifications
+
+JNCIA-Junos (Entry level)
+
+JNCIS (Intermediate)
+
+JNCIP (Professional)
+
+JNCIE (Expert)
+
+11. Why Juniper?
+
+Clean and consistent OS
+
+Strong automation (NETCONF, REST, Python)
+
+Reliable for large-scale networks
+
+If you want, I can:
+
+Explain JNCIA exam topics
+
+Provide CLI practice labs
+
+Compare Juniper vs Cisco
+
+Go deeper into routing, switching, or security
+
+Just tell me 👍
